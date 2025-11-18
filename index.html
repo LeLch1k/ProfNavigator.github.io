@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ПрофНавигатор: Люберецкий техникум</title>
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #4a90e2;
+            --accent-color: #ff6b35;
+            --light-color: #f5f7fa;
+            --dark-color: #333;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --text-color: #333;
+            --text-light: #666;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-color);
+            transition: var(--transition);
+        }
+
+        /* Высокая контрастность */
+        body.high-contrast {
+            --light-color: #000;
+            --dark-color: #fff;
+            --text-color: #fff;
+            --text-light: #ccc;
+            background-color: #000;
+            color: #fff;
+        }
+
+        /* Увеличенный шрифт */
+        body.large-font {
+            font-size: 1.2rem;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Панель доступности */
+        .accessibility-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .accessibility-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .accessibility-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: var(--box-shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Основной контент */
+        .main-content {
+            display: flex;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .user-profile {
+            flex: 1;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+        }
+
+        .professions-container {
+            flex: 2;
+        }
+
+        .section-title {
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Форма профиля */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(44, 90, 160, 0.2);
+        }
+
+        /* Фильтры профессий */
+        .filters {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            flex: 1;
+        }
+
+        /* Список профессий */
+        .professions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .profession-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .profession-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .profession-card.selected {
+            border-color: var(--primary-color);
+        }
+
+        .profession-card.available {
+            border-left: 5px solid var(--success-color);
+        }
+
+        .profession-card.limited {
+            border-left: 5px solid var(--warning-color);
+        }
+
+        .profession-card.not-available {
+            border-left: 5px solid var(--danger-color);
+        }
+
+        .profession-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .profession-code {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .availability-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .available-badge {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--success-color);
+        }
+
+        .limited-badge {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: var(--warning-color);
+        }
+
+        .not-available-badge {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--danger-color);
+        }
+
+        /* Детали профессии */
+        .profession-details {
+            margin-top: 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .details-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .requirements-list {
+            list-style-type: none;
+        }
+
+        .requirements-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .requirements-list li:last-child {
+            border-bottom: none;
+        }
+
+        .requirement-icon {
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+
+        .requirement-met {
+            color: var(--success-color);
+        }
+
+        .requirement-partial {
+            color: var(--warning-color);
+        }
+
+        .requirement-not-met {
+            color: var(--danger-color);
+        }
+
+        .recommendation {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            background-color: rgba(44, 90, 160, 0.1);
+        }
+
+        .recommendation-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        /* Кнопки */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #e55a2b;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .professions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Панель доступности -->
+    <div class="accessibility-panel">
+        <button class="accessibility-btn" id="font-size-toggle" title="Увеличить шрифт">
+            A+
+        </button>
+        <button class="accessibility-btn" id="contrast-toggle" title="Высокая контрастность">
+            ⚫
+        </button>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">ПрофНавигатор: Люберецкий техникум</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- Профиль пользователя -->
+            <div class="user-profile">
+                <h2 class="section-title">Ваш профиль</h2>
+                <form id="user-profile-form">
+                    <div class="form-group">
+                        <label for="disability-type">Тип ограничения</label>
+                        <select id="disability-type" class="form-control" required>
+                            <option value="">Выберите тип</option>
+                            <option value="vision">Нарушение зрения</option>
+                            <option value="hearing">Нарушение слуха</option>
+                            <option value="mobility">Нарушение опорно-двигательного аппарата</option>
+                            <option value="mental">Ментальные расстройства</option>
+                            <option value="none">Нет ограничений</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="disability-degree">Степень ограничения</label>
+                        <select id="disability-degree" class="form-control" required>
+                            <option value="">Выберите степень</option>
+                            <option value="1">I группа инвалидности</option>
+                            <option value="2">II группа инвалидности</option>
+                            <option value="3">III группа инвалидности</option>
+                            <option value="wheelchair">Передвигаюсь на коляске</option>
+                            <option value="low-vision">Слабовидящий</option>
+                            <option value="deaf">Глухота</option>
+                            <option value="none">Нет ограничений</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="education">Уровень образования</label>
+                        <select id="education" class="form-control" required>
+                            <option value="">Выберите уровень</option>
+                            <option value="9">9 классов</option>
+                            <option value="11">11 классов</option>
+                            <option value="college">Среднее профессиональное образование</option>
+                            <option value="higher">Высшее образование</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="update-profile">Обновить профиль</button>
+                </form>
+            </div>
+
+            <!-- Список профессий -->
+            <div class="professions-container">
+                <h2 class="section-title">Профессии в Люберецком техникуме</h2>
+                
+                <!-- Фильтры -->
+                <div class="filters">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label for="availability-filter">Фильтр по доступности</label>
+                            <select id="availability-filter" class="form-control">
+                                <option value="all">Все профессии</option>
+                                <option value="available">Только доступные</option>
+                                <option value="limited">Частично доступные</option>
+                                <option value="not-available">Недоступные</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="search-filter">Поиск по названию</label>
+                            <input type="text" id="search-filter" class="form-control" placeholder="Введите название профессии">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="professions-grid" id="professions-grid">
+                    <!-- Профессии будут добавлены через JavaScript -->
+                </div>
+
+                <!-- Детали профессии -->
+                <div class="profession-details" id="profession-details" style="display: none;">
+                    <div class="details-header">
+                        <h3 class="details-title" id="details-title">Название профессии</h3>
+                        <span class="availability-badge" id="details-badge">Доступно</span>
+                    </div>
+                    <div id="details-content">
+                        <!-- Контент будет добавлен через JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // База данных профессий Люберецкого техникума
+        const professions = [
+            {
+                id: 1,
+                name: "Мастер по ремонту и обслуживанию инженерных систем жилищно-коммунального хозяйства",
+                code: "08.01.29",
+                description: "Обслуживание и ремонт систем отопления, водоснабжения, канализации и других инженерных систем ЖКХ.",
+                requirements: {
+                    vision: { level: "medium", description: "Требуется различать детали оборудования, читать схемы" },
+                    hearing: { level: "medium", description: "Требуется различать звуки работы оборудования для диагностики" },
+                    mobility: { level: "high", description: "Работа в стесненных условиях, на высоте, требует физической силы" },
+                    mental: { level: "medium", description: "Требуется техническое мышление, внимание к деталям" }
+                },
+                accessibility: {
+                    wheelchair: false,
+                    lowVision: { available: false, conditions: "Работа с мелкими деталями и схемами требует хорошего зрения" },
+                    deaf: { available: false, conditions: "Диагностика оборудования требует слухового контроля" }
+                },
+                studyConditions: "Учебные мастерские, требующие физической мобильности",
+                workplaceConditions: "ЖКХ, службы эксплуатации зданий"
+            },
+            {
+                id: 2,
+                name: "Сетевое и системное администрирование",
+                code: "09.02.06",
+                description: "Администрирование сетей и систем, обеспечение их работоспособности и безопасности.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с интерфейсами администрирования" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "low", description: "Преимущественно сидячая работа" },
+                    mental: { level: "high", description: "Требуется аналитическое мышление, решение проблем" }
+                },
+                accessibility: {
+                    wheelchair: true,
+                    lowVision: { available: true, conditions: "Увеличение интерфейсов, программы чтения" },
+                    deaf: { available: true, conditions: "Визуальные оповещения, текстовые инструкции" }
+                },
+                studyConditions: "Компьютерные классы, лаборатории сетевого оборудования",
+                workplaceConditions: "ИТ-отделы, сервисные компании, удаленная работа"
+            },
+            {
+                id: 3,
+                name: "Информационные системы и программирование",
+                code: "09.02.07",
+                description: "Разработка, адаптация и сопровождение программного обеспечения, администрирование баз данных.",
+                requirements: {
+                    vision: { level: "medium", description: "Требуется хорошее зрение для работы с кодом и интерфейсами" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "low", description: "Возможна удаленная работа, не требует физической активности" },
+                    mental: { level: "medium", description: "Требуется аналитическое мышление, концентрация внимания" }
+                },
+                accessibility: {
+                    wheelchair: true,
+                    lowVision: { available: true, conditions: "Увеличение шрифта, программы чтения с экрана" },
+                    deaf: { available: true, conditions: "Визуальные оповещения, субтитры" }
+                },
+                studyConditions: "Компьютерные классы с доступной средой, возможность дистанционного обучения",
+                workplaceConditions: "Удаленная работа, гибкий график, специальное ПО"
+            },
+            {
+                id: 4,
+                name: "Обеспечение информационной безопасности автоматизированных систем",
+                code: "10.02.05",
+                description: "Защита информации в автоматизированных системах, обеспечение кибербезопасности.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с интерфейсами безопасности, анализ данных" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "low", description: "Сидячая работа, возможна удаленная" },
+                    mental: { level: "high", description: "Требуется аналитическое мышление, внимание к деталям" }
+                },
+                accessibility: {
+                    wheelchair: true,
+                    lowVision: { available: true, conditions: "Увеличение интерфейсов, программы чтения" },
+                    deaf: { available: true, conditions: "Визуальные оповещения, текстовые инструкции" }
+                },
+                studyConditions: "Компьютерные классы с доступной средой",
+                workplaceConditions: "ИТ-безопасность, государственные структуры, удаленная работа"
+            },
+            {
+                id: 5,
+                name: "Оператор станков с программным управлением",
+                code: "15.01.32",
+                description: "Управление станками с ЧПУ, настройка оборудования, контроль качества обработки.",
+                requirements: {
+                    vision: { level: "high", description: "Требуется хорошее зрение для контроля качества и чтения чертежей" },
+                    hearing: { level: "medium", description: "Требуется различать звуки работы станков" },
+                    mobility: { level: "medium", description: "Работа стоя, перемещение между станками" },
+                    mental: { level: "medium", description: "Требуется техническое мышление, внимание" }
+                },
+                accessibility: {
+                    wheelchair: false,
+                    lowVision: { available: false, conditions: "Контроль качества требует хорошего зрения" },
+                    deaf: { available: false, conditions: "Контроль работы оборудования требует слуха" }
+                },
+                studyConditions: "Учебные мастерские с станками ЧПУ",
+                workplaceConditions: "Машиностроительные предприятия, заводы"
+            },
+            {
+                id: 6,
+                name: "Лаборант по контролю качества сырья, реактивов, промежуточных продуктов, готовой продукции, отходов производства",
+                code: "18.01.34",
+                description: "Проведение лабораторных анализов, контроль качества продукции на всех этапах производства.",
+                requirements: {
+                    vision: { level: "high", description: "Требуется различать цвета, отслеживать изменения в пробах" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "medium", description: "Работа в лаборатории, требует точности движений" },
+                    mental: { level: "high", description: "Требуется внимание к деталям, аккуратность" }
+                },
+                accessibility: {
+                    wheelchair: { available: true, conditions: "Специально оборудованные рабочие места" },
+                    lowVision: { available: false, conditions: "Работа с мелкими пробами требует хорошего зрения" },
+                    deaf: { available: true, conditions: "Визуальные методы контроля" }
+                },
+                studyConditions: "Лаборатории с доступной средой",
+                workplaceConditions: "Химические, фармацевтические, пищевые производства"
+            },
+            {
+                id: 7,
+                name: "Аппаратчик – оператор производства продуктов питания из растительного сырья",
+                code: "19.01.18",
+                description: "Управление технологическим оборудованием для производства пищевых продуктов.",
+                requirements: {
+                    vision: { level: "medium", description: "Контроль процессов, чтение показаний приборов" },
+                    hearing: { level: "medium", description: "Контроль работы оборудования по звуку" },
+                    mobility: { level: "medium", description: "Работа в цеху, перемещение между аппаратами" },
+                    mental: { level: "medium", description: "Требуется внимание, соблюдение технологических процессов" }
+                },
+                accessibility: {
+                    wheelchair: false,
+                    lowVision: { available: false, conditions: "Контроль процессов требует хорошего зрения" },
+                    deaf: { available: false, conditions: "Контроль оборудования требует слуха" }
+                },
+                studyConditions: "Учебные производственные цеха",
+                workplaceConditions: "Пищевые производства, комбинаты"
+            },
+            {
+                id: 8,
+                name: "Пожарная безопасность",
+                code: "20.02.04",
+                description: "Обеспечение пожарной безопасности, проведение профилактических мероприятий, тушение пожаров.",
+                requirements: {
+                    vision: { level: "high", description: "Требуется отличное зрение для оценки обстановки" },
+                    hearing: { level: "high", description: "Требуется отличный слух для работы в сложных условиях" },
+                    mobility: { level: "high", description: "Высокие физические нагрузки, работа в экстремальных условиях" },
+                    mental: { level: "high", description: "Требуется стрессоустойчивость, быстрое принятие решений" }
+                },
+                accessibility: {
+                    wheelchair: false,
+                    lowVision: { available: false, conditions: "Профессия требует отличного зрения" },
+                    deaf: { available: false, conditions: "Профессия требует отличного слуха" }
+                },
+                studyConditions: "Учебные полигоны, спортивные залы",
+                workplaceConditions: "Пожарные части, МЧС, службы безопасности"
+            },
+            {
+                id: 9,
+                name: "Мастер по ремонту и обслуживанию автомобилей",
+                code: "23.01.17",
+                description: "Диагностика, ремонт и обслуживание автомобилей, их систем и агрегатов.",
+                requirements: {
+                    vision: { level: "high", description: "Требуется хорошее зрение для работы с мелкими деталями" },
+                    hearing: { level: "medium", description: "Требуется различать звуки работы механизмов" },
+                    mobility: { level: "high", description: "Требуется физическая активность, работа в различных положениях" },
+                    mental: { level: "medium", description: "Требуется техническое мышление, внимание к деталям" }
+                },
+                accessibility: {
+                    wheelchair: false,
+                    lowVision: { available: false, conditions: "Работа с мелкими деталями требует хорошего зрения" },
+                    deaf: { available: false, conditions: "Диагностика требует слухового контроля" }
+                },
+                studyConditions: "Автомастерские, требующие физической мобильности",
+                workplaceConditions: "Автосервисы, станции технического обслуживания"
+            },
+            {
+                id: 10,
+                name: "Техническое обслуживание и ремонт двигателей, систем и агрегатов автомобилей",
+                code: "23.02.07",
+                description: "Диагностика, техническое обслуживание и ремонт автомобилей и их систем.",
+                requirements: {
+                    vision: { level: "high", description: "Требуется хорошее зрение для работы с мелкими деталями" },
+                    hearing: { level: "medium", description: "Требуется различать звуки работы механизмов" },
+                    mobility: { level: "high", description: "Требуется физическая активность, работа стоя" },
+                    mental: { level: "medium", description: "Требуется техническое мышление, внимание к деталям" }
+                },
+                accessibility: {
+                    wheelchair: false,
+                    lowVision: { available: false, conditions: "Работа с мелкими деталями требует хорошего зрения" },
+                    deaf: { available: true, conditions: "Визуальные методы диагностики" }
+                },
+                studyConditions: "Мастерские, требующие физической мобильности",
+                workplaceConditions: "Автосервисы, станции технического обслуживания"
+            },
+            {
+                id: 11,
+                name: "Производство и обслуживание авиационной техники",
+                code: "25.02.06",
+                description: "Производство, техническое обслуживание и ремонт авиационной техники.",
+                requirements: {
+                    vision: { level: "high", description: "Требуется отличное зрение для работы с точными механизмами" },
+                    hearing: { level: "medium", description: "Требуется различать звуки работы оборудования" },
+                    mobility: { level: "high", description: "Работа на высоте, в стесненных условиях" },
+                    mental: { level: "high", description: "Требуется высочайшая ответственность, внимание к деталям" }
+                },
+                accessibility: {
+                    wheelchair: false,
+                    lowVision: { available: false, conditions: "Работа с точными механизмами требует отличного зрения" },
+                    deaf: { available: false, conditions: "Контроль оборудования требует слуха" }
+                },
+                studyConditions: "Учебные мастерские, требующие физической мобильности",
+                workplaceConditions: "Авиационные заводы, сервисные центры"
+            },
+            {
+                id: 12,
+                name: "Эксплуатация беспилотных авиационных систем",
+                code: "25.02.08",
+                description: "Управление беспилотными летательными аппаратами, их техническое обслуживание.",
+                requirements: {
+                    vision: { level: "high", description: "Требуется хорошее зрение для управления БПЛА" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "low", description: "Работа с пультами управления, сидячая" },
+                    mental: { level: "high", description: "Требуется концентрация, многозадачность" }
+                },
+                accessibility: {
+                    wheelchair: true,
+                    lowVision: { available: false, conditions: "Управление БПЛА требует хорошего зрения" },
+                    deaf: { available: true, conditions: "Визуальное управление" }
+                },
+                studyConditions: "Компьютерные классы, полигоны для испытаний",
+                workplaceConditions: "Службы мониторинга, геодезия, съемка, МЧС"
+            },
+            {
+                id: 13,
+                name: "Мастер садово-паркового и ландшафтного строительства",
+                code: "35.01.19",
+                description: "Создание и содержание зеленых насаждений, ландшафтных объектов.",
+                requirements: {
+                    vision: { level: "medium", description: "Требуется различать растения, контролировать качество работ" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "high", description: "Работа на открытом воздухе, физический труд" },
+                    mental: { level: "medium", description: "Требуется творческое мышление, знание растений" }
+                },
+                accessibility: {
+                    wheelchair: false,
+                    lowVision: { available: false, conditions: "Работа с растениями требует хорошего зрения" },
+                    deaf: { available: true, conditions: "Визуальные методы работы" }
+                },
+                studyConditions: "Учебные участки, теплицы",
+                workplaceConditions: "Парки, садовые центры, ландшафтные компании"
+            },
+            {
+                id: 14,
+                name: "Садово-парковое и ландшафтное строительство",
+                code: "35.02.12",
+                description: "Проектирование, создание и содержание объектов ландшафтной архитектуры.",
+                requirements: {
+                    vision: { level: "medium", description: "Требуется различать растения, работать с чертежами" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "medium", description: "Сочетание работы в офисе и на объектах" },
+                    mental: { level: "medium", description: "Требуется творческое и пространственное мышление" }
+                },
+                accessibility: {
+                    wheelchair: { available: true, conditions: "Проектная работа возможна в офисе" },
+                    lowVision: { available: true, conditions: "Увеличение чертежей, специальное ПО" },
+                    deaf: { available: true, conditions: "Визуальные методы работы" }
+                },
+                studyConditions: "Учебные классы и участки",
+                workplaceConditions: "Ландшафтные компании, проектные бюро, муниципальные службы"
+            },
+            {
+                id: 15,
+                name: "Операционная деятельность в логистике",
+                code: "38.02.03",
+                description: "Организация и управление логистическими процессами на предприятии.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с документами, системами учета" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "low", description: "Преимущественно офисная работа" },
+                    mental: { level: "high", description: "Требуется аналитическое мышление, многозадачность" }
+                },
+                accessibility: {
+                    wheelchair: true,
+                    lowVision: { available: true, conditions: "Увеличение шрифта, программы чтения" },
+                    deaf: { available: true, conditions: "Текстовые коммуникации" }
+                },
+                studyConditions: "Компьютерные классы с доступной средой",
+                workplaceConditions: "Логистические компании, склады, транспортные предприятия"
+            },
+            {
+                id: 16,
+                name: "Коммерция (по отраслям)",
+                code: "38.02.04",
+                description: "Организация и управление торговыми процессами, работа с клиентами.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с документами, товарами" },
+                    hearing: { level: "medium", description: "Требуется общение с клиентами" },
+                    mobility: { level: "medium", description: "Работа в торговом зале, требует перемещений" },
+                    mental: { level: "medium", description: "Требуется коммуникабельность, стрессоустойчивость" }
+                },
+                accessibility: {
+                    wheelchair: { available: true, conditions: "Доступная среда в торговых залах" },
+                    lowVision: { available: true, conditions: "Увеличение этикеток, специальные устройства" },
+                    deaf: { available: true, conditions: "Письменное общение, таблички" }
+                },
+                studyConditions: "Учебные классы, тренинговые центры",
+                workplaceConditions: "Торговые центры, магазины, отделы продаж"
+            },
+            {
+                id: 17,
+                name: "Право и организация социального обеспечения",
+                code: "40.02.01",
+                description: "Оказание социальных услуг, работа с законодательством в социальной сфере.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с документами, законодательными актами" },
+                    hearing: { level: "medium", description: "Требуется общение с людьми" },
+                    mobility: { level: "low", description: "Преимущественно офисная работа" },
+                    mental: { level: "high", description: "Требуется знание законодательства, эмпатия" }
+                },
+                accessibility: {
+                    wheelchair: true,
+                    lowVision: { available: true, conditions: "Увеличение шрифта, программы чтения" },
+                    deaf: { available: true, conditions: "Письменное общение, сурдоперевод" }
+                },
+                studyConditions: "Учебные классы с доступной средой",
+                workplaceConditions: "Социальные службы, пенсионные фонды, государственные учреждения"
+            },
+            {
+                id: 18,
+                name: "Повар, кондитер",
+                code: "43.01.09",
+                description: "Приготовление блюд и кондитерских изделий, организация процесса приготовления.",
+                requirements: {
+                    vision: { level: "medium", description: "Требуется различать цвета, степени готовности продуктов" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "high", description: "Работа стоя, физическая активность" },
+                    mental: { level: "medium", description: "Требуется творческое мышление, многозадачность" }
+                },
+                accessibility: {
+                    wheelchair: { available: false, conditions: "Работа требует постоянного перемещения по кухне" },
+                    lowVision: { available: false, conditions: "Требуется различать цвета и степени готовности" },
+                    deaf: { available: true, conditions: "Визуальные методы коммуникации" }
+                },
+                studyConditions: "Учебные кухни, требующие физической мобильности",
+                workplaceConditions: "Рестораны, столовые, пищевые производства"
+            },
+            {
+                id: 19,
+                name: "Технология парикмахерского искусства",
+                code: "43.02.13",
+                description: "Выполнение парикмахерских услуг, создание причесок, уход за волосами.",
+                requirements: {
+                    vision: { level: "high", description: "Требуется хорошее зрение для работы с мелкими деталями" },
+                    hearing: { level: "medium", description: "Требуется общение с клиентами" },
+                    mobility: { level: "high", description: "Работа стоя, требует физической выносливости" },
+                    mental: { level: "medium", description: "Требуется творческое мышление, коммуникабельность" }
+                },
+                accessibility: {
+                    wheelchair: false,
+                    lowVision: { available: false, conditions: "Работа с мелкими деталями требует хорошего зрения" },
+                    deaf: { available: true, conditions: "Визуальное общение, письменные инструкции" }
+                },
+                studyConditions: "Учебные парикмахерские",
+                workplaceConditions: "Салоны красоты, парикмахерские"
+            },
+            {
+                id: 20,
+                name: "Поварское и кондитерское дело",
+                code: "43.02.15",
+                description: "Приготовление блюд, кондитерских изделий, организация процесса приготовления.",
+                requirements: {
+                    vision: { level: "medium", description: "Требуется различать цвета, степени готовности продуктов" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "high", description: "Работа стоя, физическая активность" },
+                    mental: { level: "medium", description: "Требуется творческое мышление, многозадачность" }
+                },
+                accessibility: {
+                    wheelchair: { available: false, conditions: "Работа требует постоянного перемещения по кухне" },
+                    lowVision: { available: false, conditions: "Требуется различать цвета и степени готовности" },
+                    deaf: { available: true, conditions: "Визуальные методы коммуникации" }
+                },
+                studyConditions: "Учебные кухни, требующие физической мобильности",
+                workplaceConditions: "Рестораны, столовые, пищевые производства"
+            },
+            {
+                id: 21,
+                name: "Технология индустрии красоты",
+                code: "43.02.17",
+                description: "Оказание услуг в сфере красоты и ухода: косметология, визаж, уход за кожей.",
+                requirements: {
+                    vision: { level: "high", description: "Требуется хорошее зрение для работы с мелкими деталями" },
+                    hearing: { level: "medium", description: "Требуется общение с клиентами" },
+                    mobility: { level: "medium", description: "Работа стоя и сидя, требует точности движений" },
+                    mental: { level: "medium", description: "Требуется творческое мышление, коммуникабельность" }
+                },
+                accessibility: {
+                    wheelchair: { available: true, conditions: "Специально оборудованные рабочие места" },
+                    lowVision: { available: false, conditions: "Работа с мелкими деталями требует хорошего зрения" },
+                    deaf: { available: true, conditions: "Визуальное общение, письменные инструкции" }
+                },
+                studyConditions: "Учебные салоны красоты",
+                workplaceConditions: "Салоны красоты, спа-центры, косметологические клиники"
+            },
+            {
+                id: 22,
+                name: "Документационное обеспечение управления и архивоведение",
+                code: "46.02.01",
+                description: "Ведение документации, организация документооборота, работа с архивами.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с документами, требуется хорошее зрение" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "low", description: "Преимущественно сидячая работа" },
+                    mental: { level: "high", description: "Требуется внимание к деталям, системное мышление" }
+                },
+                accessibility: {
+                    wheelchair: true,
+                    lowVision: { available: true, conditions: "Увеличение шрифта, программы чтения" },
+                    deaf: { available: true, conditions: "Текстовые коммуникации" }
+                },
+                studyConditions: "Компьютерные классы с доступной средой",
+                workplaceConditions: "Офисы, архивы, государственные учреждения"
+            },
+            {
+                id: 23,
+                name: "Графический дизайнер",
+                code: "54.01.20",
+                description: "Создание визуальных коммуникаций, дизайн полиграфической продукции, веб-интерфейсов.",
+                requirements: {
+                    vision: { level: "high", description: "Требуется хорошее цветовосприятие и зрение" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "low", description: "Работа за компьютером, сидячая" },
+                    mental: { level: "high", description: "Требуется творческое мышление, внимание к деталям" }
+                },
+                accessibility: {
+                    wheelchair: true,
+                    lowVision: { available: true, conditions: "Специальное ПО, увеличение интерфейсов" },
+                    deaf: { available: true, conditions: "Визуальные методы коммуникации" }
+                },
+                studyConditions: "Компьютерные классы с графическими станциями",
+                workplaceConditions: "Дизайн-студии, рекламные агентства, удаленная работа"
+            },
+            {
+                id: 24,
+                name: "Эксплуатация и обслуживание многоквартирного дома",
+                code: "08.02.14",
+                description: "Управление многоквартирным домом, организация его эксплуатации и обслуживания.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с документами, осмотр помещений" },
+                    hearing: { level: "medium", description: "Общение с жильцами, подрядчиками" },
+                    mobility: { level: "medium", description: "Обход помещений, работа в офисе" },
+                    mental: { level: "medium", description: "Требуется коммуникабельность, организационные навыки" }
+                },
+                accessibility: {
+                    wheelchair: { available: true, conditions: "Доступная среда в офисе" },
+                    lowVision: { available: true, conditions: "Увеличение документов, специальные устройства" },
+                    deaf: { available: true, conditions: "Письменное общение, таблички" }
+                },
+                studyConditions: "Учебные классы",
+                workplaceConditions: "Управляющие компании, ЖКХ"
+            },
+            {
+                id: 25,
+                name: "Технология машиностроения",
+                code: "15.02.16",
+                description: "Разработка технологических процессов в машиностроении, проектирование оснастки.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с чертежами, схемами" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "medium", description: "Сочетание работы в офисе и в цеху" },
+                    mental: { level: "high", description: "Требуется техническое мышление, пространственное воображение" }
+                },
+                accessibility: {
+                    wheelchair: { available: true, conditions: "Проектная работа возможна в офисе" },
+                    lowVision: { available: true, conditions: "Увеличение чертежей, специальное ПО" },
+                    deaf: { available: true, conditions: "Визуальные методы работы" }
+                },
+                studyConditions: "Компьютерные классы, учебные мастерские",
+                workplaceConditions: "Машиностроительные предприятия, КБ, заводы"
+            },
+            {
+                id: 26,
+                name: "Землеустройство",
+                code: "21.02.19",
+                description: "Проведение землеустроительных работ, кадастровая деятельность, межевание земель.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с картами, чертежами, приборами" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "medium", description: "Работа в поле и в офисе" },
+                    mental: { level: "high", description: "Требуется точность, внимание к деталям" }
+                },
+                accessibility: {
+                    wheelchair: { available: true, conditions: "Офисная работа доступна" },
+                    lowVision: { available: true, conditions: "Увеличение карт, специальное ПО" },
+                    deaf: { available: true, conditions: "Визуальные методы работы" }
+                },
+                studyConditions: "Учебные классы, полевые практики",
+                workplaceConditions: "Кадастровые службы, проектные институты, муниципалитеты"
+            },
+            {
+                id: 27,
+                name: "Экономика и бухгалтерский учет",
+                code: "38.02.01",
+                description: "Ведение бухгалтерского учета, анализ финансово-хозяйственной деятельности.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с документами и цифрами" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "low", description: "Работа в офисе, сидячая" },
+                    mental: { level: "high", description: "Требуется внимание к деталям, аналитические способности" }
+                },
+                accessibility: {
+                    wheelchair: true,
+                    lowVision: { available: true, conditions: "Увеличение шрифта, программы чтения с экрана" },
+                    deaf: { available: true, conditions: "Визуальные методы коммуникации" }
+                },
+                studyConditions: "Классы с доступной средой, компьютерные классы",
+                workplaceConditions: "Офисная работа, возможность удаленной работы"
+            },
+            {
+                id: 28,
+                name: "Мастер по изготовлению и сборке деталей и узлов оптических и оптикоэлектронных приборов и систем",
+                code: "12.01.09",
+                description: "Изготовление и сборка точных оптических деталей и приборов.",
+                requirements: {
+                    vision: { level: "high", description: "Требуется отличное зрение для работы с мельчайшими деталями" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "medium", description: "Работа требует точности движений, усидчивости" },
+                    mental: { level: "high", description: "Требуется высочайшая точность, внимание к деталям" }
+                },
+                accessibility: {
+                    wheelchair: { available: true, conditions: "Специально оборудованные рабочие места" },
+                    lowVision: { available: false, conditions: "Работа с мельчайшими деталями требует отличного зрения" },
+                    deaf: { available: true, conditions: "Визуальные методы контроля" }
+                },
+                studyConditions: "Учебные мастерские с микроскопами и точными инструментами",
+                workplaceConditions: "Оптические производства, приборостроительные заводы"
+            },
+            {
+                id: 29,
+                name: "Мастер слесарных работ",
+                code: "15.01.35",
+                description: "Выполнение слесарных работ, обработка металлов, сборка механизмов.",
+                requirements: {
+                    vision: { level: "medium", description: "Требуется хорошее зрение для работы с деталями" },
+                    hearing: { level: "low", description: "Минимальные требования к слуху" },
+                    mobility: { level: "high", description: "Требуется физическая сила, работа в различных положениях" },
+                    mental: { level: "medium", description: "Требуется техническое мышление, внимание" }
+                },
+                accessibility: {
+                    wheelchair: false,
+                    lowVision: { available: false, conditions: "Работа с деталями требует хорошего зрения" },
+                    deaf: { available: true, conditions: "Визуальные методы работы" }
+                },
+                studyConditions: "Слесарные мастерские, требующие физической мобильности",
+                workplaceConditions: "Машиностроительные предприятия, ремонтные мастерские"
+            },
+            {
+                id: 30,
+                name: "Оператор-наладчик металлообрабатывающих станков",
+                code: "15.01.38",
+                description: "Наладка и эксплуатация металлообрабатывающих станков, контроль качества обработки.",
+                requirements: {
+                    vision: { level: "high", description: "Требуется хорошее зрение для контроля качества" },
+                    hearing: { level: "medium", description: "Требуется различать звуки работы станков" },
+                    mobility: { level: "medium", description: "Работа стоя, перемещение между станками" },
+                    mental: { level: "medium", description: "Требуется техническое мышление, внимание" }
+                },
+                accessibility: {
+                    wheelchair: false,
+                    lowVision: { available: false, conditions: "Контроль качества требует хорошего зрения" },
+                    deaf: { available: false, conditions: "Контроль работы оборудования требует слуха" }
+                },
+                studyConditions: "Учебные мастерские со станками",
+                workplaceConditions: "Машиностроительные предприятия, заводы"
+            },
+            {
+                id: 31,
+                name: "Торговое дело",
+                code: "38.02.08",
+                description: "Организация и управление торговыми процессами, мерчандайзинг, работа с клиентами.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с товарами, документами" },
+                    hearing: { level: "medium", description: "Требуется общение с клиентами" },
+                    mobility: { level: "medium", description: "Работа в торговом зале, требует перемещений" },
+                    mental: { level: "medium", description: "Требуется коммуникабельность, стрессоустойчивость" }
+                },
+                accessibility: {
+                    wheelchair: { available: true, conditions: "Доступная среда в торговых залах" },
+                    lowVision: { available: true, conditions: "Увеличение этикеток, специальные устройства" },
+                    deaf: { available: true, conditions: "Письменное общение, таблички" }
+                },
+                studyConditions: "Учебные классы, тренинговые центры",
+                workplaceConditions: "Торговые центры, магазины, отделы продаж"
+            },
+            {
+                id: 32,
+                name: "Право и организация социального обеспечения",
+                code: "40.02.01",
+                description: "Оказание социальных услуг, работа с законодательством в социальной сфере.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с документами, законодательными актами" },
+                    hearing: { level: "medium", description: "Требуется общение с людьми" },
+                    mobility: { level: "low", description: "Преимущественно офисная работа" },
+                    mental: { level: "high", description: "Требуется знание законодательства, эмпатия" }
+                },
+                accessibility: {
+                    wheelchair: true,
+                    lowVision: { available: true, conditions: "Увеличение шрифта, программы чтения" },
+                    deaf: { available: true, conditions: "Письменное общение, сурдоперевод" }
+                },
+                studyConditions: "Учебные классы с доступной средой",
+                workplaceConditions: "Социальные службы, пенсионные фонды, государственные учреждения"
+            },
+            {
+                id: 33,
+                name: "Юриспруденция",
+                code: "40.02.04",
+                description: "Оказание юридических услуг, работа с законодательством, защита прав граждан.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с документами, законодательными актами" },
+                    hearing: { level: "medium", description: "Требуется общение с клиентами, участие в процессах" },
+                    mobility: { level: "low", description: "Преимущественно офисная работа" },
+                    mental: { level: "high", description: "Требуется знание законодательства, аналитическое мышление" }
+                },
+                accessibility: {
+                    wheelchair: true,
+                    lowVision: { available: true, conditions: "Увеличение шрифта, программы чтения" },
+                    deaf: { available: true, conditions: "Письменное общение, сурдоперевод" }
+                },
+                studyConditions: "Учебные классы с доступной средой",
+                workplaceConditions: "Юридические фирмы, государственные учреждения, суды"
+            },
+            {
+                id: 34,
+                name: "Преподавание в начальных классах",
+                code: "40.02.02",
+                description: "Обучение и воспитание детей в начальной школе, организация учебного процесса.",
+                requirements: {
+                    vision: { level: "medium", description: "Работа с учебными материалами, контроль за детьми" },
+                    hearing: { level: "high", description: "Требуется общение с детьми, родителями, коллегами" },
+                    mobility: { level: "medium", description: "Работа в классе, требует перемещений" },
+                    mental: { level: "high", description: "Требуется педагогическое мышление, стрессоустойчивость" }
+                },
+                accessibility: {
+                    wheelchair: { available: true, conditions: "Доступная среда в школах" },
+                    lowVision: { available: true, conditions: "Увеличение материалов, специальные устройства" },
+                    deaf: { available: false, conditions: "Профессия требует постоянного verbal общения" }
+                },
+                studyConditions: "Учебные классы, педагогическая практика",
+                workplaceConditions: "Школы, образовательные центры"
+            }
+        ];
+
+        // Текущий профиль пользователя
+        let userProfile = {
+            disabilityType: "",
+            disabilityDegree: "",
+            education: ""
+        };
+
+        // Инициализация страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Заполняем сетку профессий
+            renderProfessions();
+            
+            // Обработчики событий
+            document.getElementById('update-profile').addEventListener('click', updateProfile);
+            document.getElementById('font-size-toggle').addEventListener('click', toggleFontSize);
+            document.getElementById('contrast-toggle').addEventListener('click', toggleContrast);
+            document.getElementById('availability-filter').addEventListener('change', filterProfessions);
+            document.getElementById('search-filter').addEventListener('input', filterProfessions);
+            
+            // Изначально скрываем детали профессии
+            document.getElementById('profession-details').style.display = 'none';
+        });
+
+        // Рендеринг списка профессий
+        function renderProfessions(filteredProfessions = professions) {
+            const grid = document.getElementById('professions-grid');
+            grid.innerHTML = '';
+            
+            if (filteredProfessions.length === 0) {
+                grid.innerHTML = '<p>Профессии не найдены. Попробуйте изменить параметры фильтра.</p>';
+                return;
+            }
+            
+            filteredProfessions.forEach(profession => {
+                const availability = calculateAvailability(profession);
+                const card = document.createElement('div');
+                card.className = `profession-card ${availability.status}`;
+                card.dataset.id = profession.id;
+                
+                let badgeClass, badgeText;
+                switch(availability.status) {
+                    case 'available':
+                        badgeClass = 'available-badge';
+                        badgeText = 'Доступно';
+                        break;
+                    case 'limited':
+                        badgeClass = 'limited-badge';
+                        badgeText = 'Частично доступно';
+                        break;
+                    case 'not-available':
+                        badgeClass = 'not-available-badge';
+                        badgeText = 'Не доступно';
+                        break;
+                }
+                
+                card.innerHTML = `
+                    <div class="profession-name">${profession.name}</div>
+                    <div class="profession-code">Код: ${profession.code}</div>
+                    <div class="availability-badge ${badgeClass}">${badgeText}</div>
+                    <p>${profession.description}</p>
+                `;
+                
+                card.addEventListener('click', () => showProfessionDetails(profession));
+                grid.appendChild(card);
+            });
+        }
+
+        // Расчет доступности профессии
+        function calculateAvailability(profession) {
+            if (!userProfile.disabilityType || userProfile.disabilityType === 'none') {
+                return { status: 'available', reasons: [] };
+            }
+            
+            const reasons = [];
+            let status = 'available';
+            
+            // Проверка по типу ограничения
+            const requirement = profession.requirements[userProfile.disabilityType];
+            if (requirement) {
+                if (requirement.level === 'high') {
+                    status = 'not-available';
+                    reasons.push(requirement.description);
+                } else if (requirement.level === 'medium') {
+                    status = status === 'available' ? 'limited' : status;
+                    reasons.push(requirement.description);
+                }
+            }
+            
+            // Проверка по степени ограничения
+            if (userProfile.disabilityDegree === 'wheelchair') {
+                if (profession.accessibility.wheelchair === false) {
+                    status = 'not-available';
+                    reasons.push('Профессия требует физической мобильности');
+                } else if (profession.accessibility.wheelchair && profession.accessibility.wheelchair !== true) {
+                    status = status === 'available' ? 'limited' : status;
+                    reasons.push(profession.accessibility.wheelchair.conditions);
+                }
+            }
+            
+            if (userProfile.disabilityDegree === 'low-vision') {
+                if (profession.accessibility.lowVision.available === false) {
+                    status = 'not-available';
+                    reasons.push(profession.accessibility.lowVision.conditions);
+                } else if (profession.accessibility.lowVision.available && profession.accessibility.lowVision.conditions) {
+                    status = status === 'available' ? 'limited' : status;
+                    reasons.push(profession.accessibility.lowVision.conditions);
+                }
+            }
+            
+            if (userProfile.disabilityDegree === 'deaf') {
+                if (profession.accessibility.deaf.available === false) {
+                    status = 'not-available';
+                    reasons.push(profession.accessibility.deaf.conditions);
+                } else if (profession.accessibility.deaf.available && profession.accessibility.deaf.conditions) {
+                    status = status === 'available' ? 'limited' : status;
+                    reasons.push(profession.accessibility.deaf.conditions);
+                }
+            }
+            
+            return { status, reasons };
+        }
+
+        // Показать детали профессии
+        function showProfessionDetails(profession) {
+            const availability = calculateAvailability(profession);
+            
+            // Обновляем заголовок
+            document.getElementById('details-title').textContent = profession.name;
+            
+            // Обновляем бейдж доступности
+            const badge = document.getElementById('details-badge');
+            badge.className = 'availability-badge ';
+            
+            switch(availability.status) {
+                case 'available':
+                    badge.classList.add('available-badge');
+                    badge.textContent = 'Доступно';
+                    break;
+                case 'limited':
+                    badge.classList.add('limited-badge');
+                    badge.textContent = 'Частично доступно';
+                    break;
+                case 'not-available':
+                    badge.classList.add('not-available-badge');
+                    badge.textContent = 'Не доступно';
+                    break;
+            }
+            
+            // Формируем контент
+            let content = `
+                <p><strong>Код:</strong> ${profession.code}</p>
+                <p><strong>Описание:</strong> ${profession.description}</p>
+                
+                <h4>Требования по здоровью:</h4>
+                <ul class="requirements-list">
+            `;
+            
+            // Добавляем требования
+            for (const [key, value] of Object.entries(profession.requirements)) {
+                let requirementText = '';
+                let iconClass = '';
+                
+                switch(key) {
+                    case 'vision':
+                        requirementText = 'Зрение: ' + value.description;
+                        break;
+                    case 'hearing':
+                        requirementText = 'Слух: ' + value.description;
+                        break;
+                    case 'mobility':
+                        requirementText = 'Мобильность: ' + value.description;
+                        break;
+                    case 'mental':
+                        requirementText = 'Психическое здоровье: ' + value.description;
+                        break;
+                }
+                
+                // Определяем иконку в зависимости от уровня требований
+                if (value.level === 'high') {
+                    iconClass = 'requirement-not-met';
+                } else if (value.level === 'medium') {
+                    iconClass = 'requirement-partial';
+                } else {
+                    iconClass = 'requirement-met';
+                }
+                
+                content += `
+                    <li>
+                        <span class="requirement-icon ${iconClass}">●</span>
+                        ${requirementText}
+                    </li>
+                `;
+            }
+            
+            content += `
+                </ul>
+                
+                <h4>Условия обучения:</h4>
+                <p>${profession.studyConditions}</p>
+                
+                <h4>Условия труда:</h4>
+                <p>${profession.workplaceConditions}</p>
+            `;
+            
+            // Добавляем рекомендации, если профессия не полностью доступна
+            if (availability.status !== 'available') {
+                content += `
+                    <div class="recommendation">
+                        <div class="recommendation-title">Рекомендации:</div>
+                        <ul>
+                `;
+                
+                availability.reasons.forEach(reason => {
+                    content += `<li>${reason}</li>`;
+                });
+                
+                if (availability.status === 'not-available') {
+                    content += `<li>Рекомендуем рассмотреть другие профессии из списка доступных</li>`;
+                } else {
+                    content += `<li>Возможны адаптации и специальные условия</li>`;
+                }
+                
+                content += `</ul></div>`;
+            }
+            
+            document.getElementById('details-content').innerHTML = content;
+            document.getElementById('profession-details').style.display = 'block';
+            
+            // Прокручиваем к деталям
+            document.getElementById('profession-details').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Обновление профиля пользователя
+        function updateProfile() {
+            userProfile.disabilityType = document.getElementById('disability-type').value;
+            userProfile.disabilityDegree = document.getElementById('disability-degree').value;
+            userProfile.education = document.getElementById('education').value;
+            
+            // Пересчитываем доступность профессий
+            filterProfessions();
+            
+            // Скрываем детали, так как они могли устареть
+            document.getElementById('profession-details').style.display = 'none';
+            
+            alert('Профиль обновлен! Доступность профессий пересчитана.');
+        }
+
+        // Фильтрация профессий
+        function filterProfessions() {
+            const availabilityFilter = document.getElementById('availability-filter').value;
+            const searchFilter = document.getElementById('search-filter').value.toLowerCase();
+            
+            let filtered = professions;
+            
+            // Фильтр по поиску
+            if (searchFilter) {
+                filtered = filtered.filter(profession => 
+                    profession.name.toLowerCase().includes(searchFilter) || 
+                    profession.code.includes(searchFilter)
+                );
+            }
+            
+            // Фильтр по доступности
+            if (availabilityFilter !== 'all') {
+                filtered = filtered.filter(profession => {
+                    const availability = calculateAvailability(profession);
+                    return availability.status === availabilityFilter;
+                });
+            }
+            
+            renderProfessions(filtered);
+        }
+
+        // Функции доступности
+        function toggleFontSize() {
+            document.body.classList.toggle('large-font');
+        }
+
+        function toggleContrast() {
+            document.body.classList.toggle('high-contrast');
+        }
+    </script>
+</body>
+</html>
